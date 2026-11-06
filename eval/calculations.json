@@ -1,0 +1,14 @@
+[
+  {"id":"direct_1","kind":"direct","values":[1,2,3,4,5],"mean":3,"error":1.963243161477561},
+  {"id":"direct_2","kind":"direct","values":[2,2.01,1.99,2.02,1.98],"mean":2,"error":0.01963243161477561},
+  {"id":"direct_instrument","kind":"direct","values":[2,2,2,2,2],"instrument_error":0.03,"mean":2,"error":0.03394757202228515},
+  {"id":"fit_exact","kind":"fit","x":[1,2,3,4,5],"y":[3,5,7,9,11],"slope":2,"intercept":1},
+  {"id":"fit_residual","kind":"fit","x":[-2,-1,0,1,2],"y":[-2,-2,1,2,6],"slope":2,"intercept":1},
+  {"id":"pendulum","kind":"indirect","formula":"4*pi**2*L/T**2","values":{"L":1,"T":2},"errors":{},"value":9.869604401089358},
+  {"id":"square","kind":"indirect","formula":"x**2","values":{"x":2},"errors":{"x":0.1},"value":4,"error":0.7839855938160216},
+  {"id":"speed","kind":"indirect","formula":"L/T","values":{"L":10,"T":2},"errors":{},"value":5},
+  {"id":"repeat_outlier","kind":"outlier","values":[10,10.01,9.99,10.02,10.01,10,9.98,10,40],"indices":[8]},
+  {"id":"repeat_clean","kind":"outlier","values":[9.98,9.99,10,10.01,10.02],"indices":[]},
+  {"id":"fit_outlier","kind":"fit_outlier","x":[0,1,2,3,4,5,6,7,8,9],"y":[1,3,5,7,29,11,13,15,17,19],"indices":[4]},
+  {"id":"fit_clean","kind":"fit_outlier","x":[1,2,3,4,5],"y":[3,5,7,9,11],"indices":[]}
+]

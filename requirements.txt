@@ -1,0 +1,18 @@
+# LLM
+openai==2.9.0
+# Парсинг методичек
+pymupdf==1.28.0
+# Расчёты и графики
+numpy==2.5.1
+scipy==1.17.1
+sympy==1.14.0
+matplotlib==3.11.1
+# API и чат
+fastapi==0.122.0
+uvicorn==0.40.0
+python-multipart==0.0.22
+streamlit==1.52.2
+httpx==0.28.1
+# Прочее
+pyyaml==6.0.3
+reportlab==5.0.0

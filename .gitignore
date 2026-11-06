@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+install.log
+artifacts/
+data/methodics/*.pdf
+!data/methodics/ОБРАЗЕЦ_механика_практикум.pdf
+data/index/
+.pytest_cache/
+injections_deepset.jsonl
+# Локально загружаемые веса не публикуются.
+models/
+.runtime/
+.backups/
+.env.*
+!.env.example
+*.log
+
