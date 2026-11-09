@@ -17,3 +17,6 @@ models/
 !.env.example
 *.log
 
+
+data/team_index/
+data/team_parsed/

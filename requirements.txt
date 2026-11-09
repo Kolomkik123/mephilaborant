@@ -16,3 +16,6 @@ httpx==0.28.1
 # Прочее
 pyyaml==6.0.3
 reportlab==5.0.0
+
+# Поиск команды: локальный MiniLM через ONNX
+chromadb==1.3.0

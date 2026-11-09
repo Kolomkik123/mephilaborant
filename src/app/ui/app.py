@@ -7,7 +7,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import streamlit as st
 from app.config import settings
-from app.data.index import index_manifest
+import os
+from app.data.index import index_manifest as legacy_manifest
+from app.team_search.search import index_manifest as team_manifest
+from app.data.search_backend import make_retriever
 from app.agents.calculator import Calculator
 from app.agents.base import AgentContext, DummyTrace
 from app.tools.tables import parse_text_table
@@ -19,7 +22,12 @@ st.write("Загрузите фото таблицы или введите из�
 with st.sidebar:
     st.caption(f"Провайдер: {settings.provider}")
     st.caption(f"Модель текста: {settings.model}; зрения: {settings.vision_model}")
-    st.metric("Фрагментов методички", index_manifest().get("fragments", 0))
+    backend = st.selectbox("Поиск по методичкам", ["team", "legacy"],
+        index=0 if os.getenv("RETRIEVAL_BACKEND", "team")=="team" else 1,
+        format_func=lambda value: "Поисковик команды · MiniLM + Chroma" if value=="team" else "Встроенный BM25")
+    manifest = team_manifest() if backend=="team" else legacy_manifest()
+    st.metric("Фрагментов методички", manifest.get("fragments", 0))
+    st.caption("Расчёт использует сохранённую базу: PDF заново не сканируется.")
     if settings.is_mock:
         st.info("Mock: расчёты по тексту работают без сети. Для фото нужна модель зрения.")
 
@@ -68,7 +76,7 @@ if st.button("Посчитать", type="primary"):
                 raise ValueError("Прикрепите фотографию или выберите текстовый ввод")
             state["image"] = photo.getvalue()
         with st.spinner("Распознаю таблицу, ищу формулу в методичке и считаю…" if source == "Фотография" else "Обрабатываю таблицу и ищу формулу в методичке…"):
-            result = Calculator(AgentContext(DummyTrace())).process(state)
+            result = Calculator(AgentContext(DummyTrace()), retriever=make_retriever(backend)).process(state)
         if result.get("refused"):
             st.warning(result["answer"])
         else:
@@ -98,3 +106,18 @@ if st.button("Посчитать", type="primary"):
                                file_name="calculation.json", mime="application/json")
     except ValueError as exc:
         st.warning(str(exc))
+
+with st.sidebar:
+    if st.button("Обновить базу PDF"):
+        try:
+            with st.spinner("Обрабатываем новые и изменённые PDF…"):
+                if backend=="team":
+                    from app.team_search.parse_manuals import parse_all
+                    from app.team_search.build_index import build_database
+                    manifest=build_database(parse_all())
+                else:
+                    from app.data.index import build_index
+                    manifest=build_index(backend="bm25")
+            st.success("База уже актуальна" if manifest.get("reused") else "База обновлена")
+        except Exception as exc:
+            st.error(str(exc))

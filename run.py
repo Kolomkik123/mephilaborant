@@ -50,6 +50,9 @@ def setup():
 
 def main():
     command = sys.argv[1] if len(sys.argv) > 1 else "ui"
+    if command in {"search-model", "search-ocr-model", "search-parse", "search-index", "search-test"}:
+        from app.team_search.cli import execute
+        return execute(command)
     if command == "setup":
         return setup()
     if command == "index":
@@ -58,9 +61,9 @@ def main():
         return 0
     if command == "test":
         # Numerical regressions must never call the configured remote model.
-        return run(["-m", "unittest", "discover", "-s", "tests", "-v"], {**ENV, "LLM_PROVIDER": "mock"})
+        return run(["-m", "unittest", "discover", "-s", "tests", "-v"], {**ENV, "LLM_PROVIDER": "mock", "RETRIEVAL_BACKEND": "legacy"})
     if command == "eval":
-        return run(["eval/run_eval.py"], {**ENV, "LLM_PROVIDER": "mock"})
+        return run(["eval/run_eval.py"], {**ENV, "LLM_PROVIDER": "mock", "RETRIEVAL_BACKEND": "legacy"})
     if command == "demo":
         from app.agents.calculator import Calculator
         from app.agents.base import AgentContext, DummyTrace
@@ -104,5 +107,8 @@ def main():
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
+    except (ValueError, FileNotFoundError) as exc:
+        print(str(exc))
+        raise SystemExit(1)
     except KeyboardInterrupt:
         raise SystemExit(130)

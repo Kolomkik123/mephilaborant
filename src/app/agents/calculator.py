@@ -121,7 +121,8 @@ class Calculator(Agent):
         них незачем.
         """
         if self._retriever is None:
-            self._retriever = Retriever()
+            from app.data.search_backend import make_retriever
+            self._retriever = make_retriever()
         return self._retriever
 
     def _lookup_formula(
