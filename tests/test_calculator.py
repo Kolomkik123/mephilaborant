@@ -187,6 +187,20 @@ class IntegrationTests(unittest.TestCase):
         self.assertAlmostEqual(r["payload"]["indirect"]["value"], math.pi**2)
         self.assertEqual(r["payload"]["indirect"]["unit"], "м/с²")
 
+    def test_named_request_preserves_constant_on_next_line(self):
+        r = calculate(question="найди ускорение свободного падения\nL = 1 м", work="1.3",
+                      table_text="T, с\n2.01\n1.99\n2\n2.02\n1.98", mode="repeat")
+        self.assertAlmostEqual(r["payload"]["indirect"]["value"], math.pi**2)
+
+    def test_decimal_without_leading_zero_keeps_value(self):
+        table = parse_text_table("I, А; U, В\n.10;4.45\n.20;4.40\n.30;4.35")
+        self.assertEqual(table.columns['I'], [.1,.2,.3])
+        payload = {'columns':{'I':['.10','-.20','+.30']},'units':{'I':'А'}}
+        provider = SimpleNamespace(chat=lambda *a, **kw: SimpleNamespace(json=lambda: payload))
+        with patch('app.llm.provider.get_provider', return_value=provider):
+            photo = parse_photo_table(b'image')
+        self.assertEqual(photo.columns['I'], [.1,-.2,.3])
+
     def test_fit_order_invariant(self):
         rows = [(1,2.1),(2,3.9),(3,6.2),(4,7.8),(5,10.1)]
         def call(rows):

@@ -17,7 +17,7 @@ SEPARATOR_RE = re.compile(r"[\t;|]|\s{2,}|,(?!\d)")
 # Шапка делится только по явным разделителям: запятая в ней — часть
 # обозначения единицы («F, Н»), а не граница столбца.
 HEADER_SEPARATOR_RE = re.compile(r"[\t;|]|\s{2,}")
-NUMBER_RE = re.compile(r"^[-+]?\d+(?:[.,]\d+)?(?:[eE][-+]?\d+)?$")
+NUMBER_RE = re.compile(r"^[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][-+]?\d+)?$")
 
 
 @dataclass
@@ -40,7 +40,7 @@ class Table:
 
 
 def _to_float(token: str) -> float | None:
-    token = token.strip().replace(" ", "").replace(" ", "").strip(".;:")
+    token = token.strip().replace(" ", "").replace(" ", "").strip(";:")
     if not token or not NUMBER_RE.match(token):
         return None
     return float(token.replace(",", "."))

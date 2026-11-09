@@ -280,7 +280,9 @@ class Calculator(Agent):
             )
             # Заданные величины переводятся так же: «m = 200 г» в формуле
             # СИ без перевода даёт результат в тысячу раз больше.
-            given = given_values(_prose(FORMULA_RE.sub(" ", question)))
+            # Search prose filtering must not discard short assignments such as
+            # L = 1 м on a separate line after a natural-language request.
+            given = given_values(FORMULA_RE.sub(" ", question))
             known: dict[str, float] = dict(KNOWN_CONSTANTS)
             given_units: dict[str, str] = {}
             for item in given:
